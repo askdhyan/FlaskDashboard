@@ -1,0 +1,749 @@
+<html lang="en">
+<head>
+	<title>Support Dashboards</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='verizon.png') }}">
+	<link rel= "stylesheet" type= "text/css" href="{{ url_for('static', filename='basic_css.css') }}" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  
+  	<!--  Start of Month Year Picker 
+	  	<link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" />
+	    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+	    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+	    <script src="{{ url_for('static', filename='MonthPicker.min.js') }}"></script>
+		<link href="{{ url_for('static', filename='MonthPicker.min.css') }}" rel="stylesheet" type="text/css" />
+	    <script src="{{ url_for('static', filename='examples.js') }}"></script>
+	    END of Month Year Picker -->
+  	<!-- Styles -->
+	<style>
+		 #chartdiv1 {
+		  width: 100% ;
+		  height: 100% ;
+		} 
+		
+		#chartdiv2 {
+		  width: 100% ;
+		  height: 100% ;
+		} 
+		
+		#chartdiv3 {
+		  width: 100% ;
+		  height: 100% ;
+		}
+		
+		#loading {
+		   width: 100%;
+		   height: 100%;
+		   top: 0;
+		   left: 0;
+		   position: fixed;
+		   display: block;
+		   opacity: 0.7;
+		   background-color: #fff;
+		   z-index: 99;
+		   text-align: center;
+		}
+	</style>
+
+	<!-- Resources -->
+	<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+	<script src="https://www.amcharts.com/lib/3/gauge.js"></script>
+	<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+	<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+	<script src="https://www.amcharts.com/lib/3/themes/none.js"></script>
+	
+	<!-- Chart code -->
+	<script>
+		var chart1 = AmCharts.makeChart("chartdiv1", {
+			  "hideCredits":true,
+			  "theme": "none",
+			  "height":"100%",
+			  "autoResize":false, 
+			  "type": "gauge",
+			  "axes": [{
+			    "topTextFontSize": 20,
+			    "topTextYOffset": 70,
+			    "axisColor": "#1589FF",
+			    "axisThickness": 1,
+			    "endValue": 90,
+			    "gridInside": true,
+			    "inside": false,
+			    "radius": "60%",
+			    "valueInterval": 10,
+			    "tickColor": "#1589FF",
+			    "startAngle": -90,
+			    "endAngle": 90,
+			    "unit": "",
+			    "bandOutlineAlpha": 0,
+			    
+			    "bands": [{
+			      "color": "#ded9df",
+			      "endValue": 15,
+			      "innerRadius": "160%",
+			      "label":"Base Label",
+			      "radius": "170%",
+			      "startValue": 0
+			    }, {
+			      "color": "#b1adb2",
+			      "endValue": 30,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 16
+			    }, {
+			      "color": "#858285",
+			      "endValue": 60,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 31
+			    }, {
+			      "color": "#585659",
+			      "endValue": 90,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 61
+			    }, {
+			      "color": "#33ccff",
+			      "endValue": 15,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 0
+			    }, {
+			      "color": "#009933",
+			      "endValue": 30,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 16
+			    }, {
+			      "color": "#ffff00",
+			      "endValue": 60,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 31
+			    }, {
+			      "color": "#ff0000",
+			      "endValue": 90,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 61
+			    }]
+			  }],
+			  "arrows": [{
+			    "alpha": 1,
+			    "innerRadius": "20%",
+			    "nailRadius": 0,
+			    "radius": "160%"
+			  }]
+			
+			});
+			
+			var chart2 = AmCharts.makeChart("chartdiv2", {
+				"hideCredits":true,
+				"height": "100%",
+				"autoResize":false,
+				"theme": "none",
+				"type": "gauge",
+				"axes": [{
+			    "topTextFontSize": 20,
+			    "topTextYOffset": 70,
+			    "axisColor": "#1589FF",
+			    "axisThickness": 1,
+			    "endValue": 0,
+				"startValue": 720,
+			    "gridInside": true,
+			    "inside": false,
+			    "radius": "60%",
+			    "valueInterval": -80,
+			    "tickColor": "#1589FF",
+			    "startAngle": -90,
+			    "endAngle": 90,
+			    "unit": "",
+			    "bandOutlineAlpha": 0,
+			    "bands": [{
+			      "color": "#ded9df",
+			      "endValue": 601,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 720
+			    }, {
+			      "color": "#b1adb2",
+			      "endValue": 481,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 600
+			    }, {
+			      "color": "#858285",
+			      "endValue": 241,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 480
+			    }, {
+			      "color": "#585659",
+			      "endValue": 0,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 240
+			    }, {
+			      "color": "#33ccff",
+			      "endValue": 601,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 720
+			    }, {
+			      "color": "#009933",
+			      "endValue": 481,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 600
+			    }, {
+			      "color": "#ffff00",
+			      "endValue": 241,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 480
+			    }, {
+			      "color": "#ff0000",
+			      "endValue": 0,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 240
+			    }]
+			  }],     
+			  "arrows": [{
+			    "alpha": 1,
+			    "innerRadius": "20%",
+			    "nailRadius": 0,
+			    "radius": "160%"
+			  }]
+			 
+			});
+			
+			var chart3 = AmCharts.makeChart("chartdiv3", {
+				"hideCredits":true,
+				"height":"100%",
+				"theme": "none",
+				"autoResize":false,
+				"type": "gauge",
+				"axes": [{
+			    "topTextFontSize": 20,
+			    "topTextYOffset": 70,
+			    "axisColor": "#1589FF",
+			    "axisThickness": 1,
+			    "endValue": 144,
+			    "gridInside": true,
+			    "inside": false,
+			    "radius": "60%",
+			    "valueInterval": 16,
+			    "tickColor": "#1589FF",
+			    "startAngle": -90,
+			    "endAngle": 90,
+			    "unit": "",
+			    "bandOutlineAlpha": 0,
+			    "bands": [{
+			      "color": "#ded9df",
+			      "endValue": 24,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 0
+			    }, {
+			      "color": "#b1adb2",
+			      "endValue": 48,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 25
+			    }, {
+			      "color": "#858285",
+			      "endValue": 96,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 49
+			    }, {
+			      "color": "#585659",
+			      "endValue": 144,
+			      "innerRadius": "160%",
+			      "radius": "170%",
+			      "startValue": 97
+			    }, {
+			      "color": "#33ccff",
+			      "endValue": 24,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 0
+			    }, {
+			      "color": "#009933",
+			      "endValue": 48,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 25
+			    }, {
+			      "color": "#ffff00",
+			      "endValue": 96,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 49
+			    }, {
+			      "color": "#ff0000",
+			      "endValue": 144,
+			      "innerRadius": "140%",
+			      "radius": "150%",
+			      "startValue": 97
+			    }]
+			  }],
+			  "arrows": [{
+			    "alpha": 1,
+			    "innerRadius": "20%",
+			    "nailRadius": 0,
+			    "radius": "160%"
+			  }]
+			 
+			});
+
+		// Set Value in Chart 1
+		function randomValue1(a) {
+		  var value = Math.round(a);
+		  if(value > 90){
+			  chart1.arrows[0].setValue(90);
+		  }else if (value == -1){
+			  chart1.arrows[0].setValue(0);
+		  }else{
+			  chart1.arrows[0].setValue(value);
+		  }
+		  if (value == -1) {
+			  chart1.axes[0].setTopText(0);
+		  }else{
+		  	  chart1.axes[0].setTopText(value);
+		  }
+		}
+
+		// Set Value in Chart 2
+		function randomValue2(a) {
+		  var value = Math.round(a);
+		  if(value > 720){
+			  chart2.arrows[0].setValue(720);
+		  }else if (value == -1){
+			  chart2.arrows[0].setValue(720);
+		  }else{
+			  chart2.arrows[0].setValue(value);
+		  }
+		  if (value == -1) {
+			  chart2.axes[0].setTopText(720);
+		  }else{
+		  	  chart2.axes[0].setTopText(value);
+		  }
+		}
+
+		// Set Value in Chart 3
+		function randomValue3(a) {
+		  var value = Math.round(a);
+		  if($("#prioritybox").val() == "Critical"){
+			  if(value > 96){
+				  chart3.arrows[0].setValue(96);
+			  }else if (value == -1){
+				  chart3.arrows[0].setValue(0);
+			  }else{
+				  chart3.arrows[0].setValue(value);
+			  }
+			  if (value == -1) {
+				  chart3.axes[0].setTopText(0);
+			  }else{
+			  	  chart3.axes[0].setTopText(value);
+			  }
+		  }else if($("#prioritybox").val() == "Minor"){
+			  if(value > 288){
+				  chart3.arrows[0].setValue(288);
+			  }else if (value == -1){
+				  chart3.arrows[0].setValue(0);
+			  }else{
+				  chart3.arrows[0].setValue(value);
+			  }
+			  if (value == -1) {
+				  chart3.axes[0].setTopText(0);
+			  }else{
+			  	  chart3.axes[0].setTopText(value);
+			  }
+		  }else{
+			  if(value > 144){
+				  chart3.arrows[0].setValue(144);
+			  }else if (value == -1){
+				  chart3.arrows[0].setValue(0);
+			  }else{
+				  chart3.arrows[0].setValue(value);
+			  }
+			  if (value == -1) {
+				  chart3.axes[0].setTopText(0);
+			  }else{
+			  	  chart3.axes[0].setTopText(value);
+			  }
+		  }
+		}
+	$(document).ready(function () {
+		   $(document).ajaxStart(function () {
+		       $("#loading").show();
+		   }).ajaxStop(function () {
+		       $("#loading").hide();
+		   });
+		});
+	</script>
+</head>
+<body>
+	<div id="loading">
+	  <img id="loading-image" src="{{ url_for('static', filename='ajax-loader.gif') }}" alt="Loading..." style="
+	    align-items:  center;
+	    margin-top: 20%;
+	    height: 10%;
+	">
+	</div>
+	<div class="container-fluid">
+  		<div class="row">
+    		<div class="col-lg-3" style="background-color:#F2F3F4;height:120%">
+				<form class="form-horizontal">
+				<legend>Select Date </legend>
+				<div class="form-group">
+					<div >
+					<label class="control-label col-sm-2" for="start">Start Date:</label>
+					<div class="col-sm-10">  
+						<input type="date"  class="form-control" id="start" name="trip"
+						   value="0000-00-00" /> 
+						<!--   <input id=start name="start" type="text" /> -->
+					</div>
+				</div >
+			</div>
+			<!-- First Day of Last Month -->
+			<script>
+				var now = new Date();
+				var month = ("0" + (now.getMonth())).slice(-2);
+				var today = now.getFullYear()+"-"+(month)+"-"+("01") ;
+				$('#start').val(today);
+			</script>
+			<!-- First Day of Last Month -->
+			<div class="form-group">
+				<div>
+					<label class="control-label col-sm-2" for="end">End Date:</label>
+					<div class="col-sm-10"> 
+						<input type="date" class="form-control" id="end" name="trip"
+							   value="0000-00-00" / > 
+					 <!--  <input id="end" name="end"  type="text" /> -->
+					</div>
+				</div>
+			</div>
+			<!-- Last Day of Last Month -->
+			<script> 
+				var now = new Date();
+				var lastDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+				var lastDayOfMonth = lastDayOfMonth.getDate();
+				var day = ("0" + now.getDate()).slice(-2);
+				var month = ("0" + (now.getMonth())).slice(-2);
+				var today = now.getFullYear()+"-"+(month)+"-"+(lastDayOfMonth.toString()) ;
+				$('#end').val(today);
+			</script>
+			<!-- Last Day of Last Month -->
+			<fieldset>
+				<legend>Customers</legend>
+				<div class="form-group">
+					<div class="col-sm-10"><select class="form-control" id="Customerbox" name="Customerbox">
+					<option value="ALL" selected>ALL</option>
+					{% for customer in customer_data|sort(case_sensitive=False, attribute=None) %}
+						<option value="{{ customer }}">{{ customer }}</option>
+					{% endfor %}
+					</select>
+					</div>
+				</div>
+			</fieldset>		
+			<fieldset>
+				<legend>Sites</legend>
+				<div class="form-group">
+					<div class="col-sm-10"><select class="form-control" id="Sitebox">
+					<option value="ALL" selected>ALL</option>
+						{% for site in Site_data|sort(case_sensitive=False, attribute=None) %}
+							<option value="{{ site }}">{{ site }}</option>
+						{% endfor %}
+					</select>
+					</div>
+				</div>
+			</fieldset>
+			<script type="text/javascript">
+			$("#Customerbox").change(function () {
+				var selectbox = document.getElementById("Sitebox")
+				var customer_site_dict = {{ customersite_data |tojson | safe }};
+				var customer = $("#Customerbox").val()
+				if (customer != "ALL") {
+					removeOptions(document.getElementById("Sitebox"))
+					var option= document.createElement("option");
+			        option.text="ALL";
+					option.value="ALL";
+					selectbox.add(option);
+					insertOptions(document.getElementById("Sitebox"),customer_site_dict[customer].sort())
+				}
+				else{
+				removeOptions(selectbox)
+				var allsitedata = {{ Site_data|sort(case_sensitive=False, attribute=None) |tojson | safe}};
+				var option= document.createElement("option");
+			        option.text="ALL";
+					option.value="ALL";
+					selectbox.add(option);
+				insertOptions(selectbox,allsitedata)
+				}
+    			event.preventDefault();
+			});
+			function insertOptions(selectbox,data)
+			{
+			   var option;
+			    for(i = 0; i < data.length ; i++)
+			    {
+					option= document.createElement("option");
+			        option.text=data[i];
+					option.value=data[i];
+					selectbox.add(option);
+			    }
+			}
+			function removeOptions(selectbox)
+			{
+			    var i;
+			    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+			    {
+			        selectbox.remove(i);
+			    }
+			}
+			</script>
+			<fieldset>
+				<legend>Solution</legend>
+				<div class="form-group">
+					<div class="col-sm-10"><select class="form-control" id="Solutionbox">
+					<option value="ALL" selected>ALL</option>
+					{% for Solution in Solution_data|sort(case_sensitive=False, attribute=None) %}
+						<option value="{{ Solution }}">{{ Solution }}</option>
+					{% endfor %}
+    				</select></div>
+				</div>
+			</fieldset>
+			<legend>Priority</legend>
+			<div  class="form-group">
+				<div class="col-sm-10">
+					<select class="form-control" id="prioritybox" name="prioritybox">
+						<option value="ALL" selected>ALL</option>
+						<option value="Critical">Critical</option>
+						<option value="Major">Major</option>
+						<option value="Minor">Minor</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">        
+			  <div class="col-sm-offset-4 col-sm-8">
+				<button type="submit" class="btn btn-default">Submit</button>
+			  </div>
+			</div>
+			</form>
+			<script type="text/javascript">
+				$("#prioritybox").change(function () {
+				chart3.startDuration = 0;
+   				if ($("#prioritybox").val() == "Critical"){
+				    chart3.axes[0].endValue = 96;
+					chart3.axes[0].bands[0].setEndValue(16);
+					chart3.axes[0].bands[1].setEndValue(32);
+					chart3.axes[0].bands[2].setEndValue(64);
+					chart3.axes[0].bands[3].setEndValue(96);
+					chart3.axes[0].bands[4].setEndValue(16);
+					chart3.axes[0].bands[5].setEndValue(32);
+					chart3.axes[0].bands[6].setEndValue(64);
+					chart3.axes[0].bands[7].setEndValue(96);
+					chart3.axes[0].bands[0].setStartValue(0);
+					chart3.axes[0].bands[1].setStartValue(17);
+					chart3.axes[0].bands[2].setStartValue(33);
+					chart3.axes[0].bands[3].setStartValue(65);
+					chart3.axes[0].bands[4].setStartValue(0);
+					chart3.axes[0].bands[5].setStartValue(17);
+					chart3.axes[0].bands[6].setStartValue(33);
+					chart3.axes[0].bands[7].setStartValue(65);
+					//chart3.arrows[0].setValue(0);
+					//chart2.arrows[0].setValue(720);
+					//chart1.arrows[0].setValue(0);
+					//chart3.axes[0].setTopText(0);
+					//chart2.axes[0].setTopText(720);
+					//chart1.axes[0].setTopText(0);
+					setInterval(randomValue1(0), 1000);
+					setInterval(randomValue2(720), 1000);
+					setInterval(randomValue3(0), 1000);
+				    chart3.axes[0].chart.validateNow();
+				    chart2.axes[0].chart.validateNow();
+				    chart1.axes[0].chart.validateNow();
+				    $("#meanTimeToRespond").text("0");
+			    	$("#meanTimeBetweenIncidents").text("0");
+			    	$("#meanTimeToClose").text("0");
+				    
+				    }else if ($("#prioritybox").val() == "Minor"){
+				    	chart3.axes[0].endValue = 288;
+				    	chart3.axes[0].bands[0].setEndValue(48);
+				    	chart3.axes[0].bands[1].setEndValue(96);
+				    	chart3.axes[0].bands[2].setEndValue(192);
+				    	chart3.axes[0].bands[3].setEndValue(288);
+				    	chart3.axes[0].bands[4].setEndValue(48);
+				    	chart3.axes[0].bands[5].setEndValue(96);
+				    	chart3.axes[0].bands[6].setEndValue(192);
+				    	chart3.axes[0].bands[7].setEndValue(288);
+				    	chart3.axes[0].bands[0].setStartValue(0);
+				    	chart3.axes[0].bands[1].setStartValue(49);
+				    	chart3.axes[0].bands[2].setStartValue(97);
+				    	chart3.axes[0].bands[3].setStartValue(193);
+				    	chart3.axes[0].bands[4].setStartValue(0);
+				    	chart3.axes[0].bands[5].setStartValue(49);
+				    	chart3.axes[0].bands[6].setStartValue(97);
+				    	chart3.axes[0].bands[7].setStartValue(193);
+				    	//chart3.arrows[0].setValue(0);
+				    	//chart2.arrows[0].setValue(720);
+				    	//chart1.arrows[0].setValue(0);
+				    	//chart3.axes[0].setTopText(0);
+				    	//chart2.axes[0].setTopText(720);
+				    	//chart1.axes[0].setTopText(0);
+				    	setInterval(randomValue1(0), 1000);
+						setInterval(randomValue2(720), 1000);
+						setInterval(randomValue3(0), 1000);
+				    	chart3.axes[0].chart.validateNow();
+				    	chart2.axes[0].chart.validateNow();
+				        chart1.axes[0].chart.validateNow();
+				        $("#meanTimeToRespond").text("0");
+				    	$("#meanTimeBetweenIncidents").text("0");
+				    	$("#meanTimeToClose").text("0");
+				        
+				    }else{
+				    	chart3.axes[0].endValue = 144;
+				    	chart3.axes[0].bands[0].setEndValue(24);
+				    	chart3.axes[0].bands[1].setEndValue(48);
+				    	chart3.axes[0].bands[2].setEndValue(96);
+				    	chart3.axes[0].bands[3].setEndValue(144);
+				    	chart3.axes[0].bands[4].setEndValue(24);
+				    	chart3.axes[0].bands[5].setEndValue(48);
+				    	chart3.axes[0].bands[6].setEndValue(96);
+				    	chart3.axes[0].bands[7].setEndValue(144);
+				    	chart3.axes[0].bands[0].setStartValue(0);
+				    	chart3.axes[0].bands[1].setStartValue(25);
+				    	chart3.axes[0].bands[2].setStartValue(49);
+				    	chart3.axes[0].bands[3].setStartValue(97);
+				    	chart3.axes[0].bands[4].setStartValue(0);
+				    	chart3.axes[0].bands[5].setStartValue(25);
+				    	chart3.axes[0].bands[6].setStartValue(49);
+				    	chart3.axes[0].bands[7].setStartValue(97);
+				    	//chart3.arrows[0].setValue(0);
+				    	//chart2.arrows[0].setValue(720);
+				    	//chart1.arrows[0].setValue(0);
+				    	//chart3.axes[0].setTopText(0);
+				    	//chart2.axes[0].setTopText(720);
+				    	//chart1.axes[0].setTopText(0);
+				    	setInterval(randomValue1(0), 1000);
+						setInterval(randomValue2(720), 1000);
+						setInterval(randomValue3(0), 1000);
+				    	chart3.axes[0].chart.validateNow();
+				    	chart2.axes[0].chart.validateNow();				        
+				    	chart1.axes[0].chart.validateNow();
+				    	$("#meanTimeToRespond").text("0");
+				    	$("#meanTimeBetweenIncidents").text("0");
+				    	$("#meanTimeToClose").text("0");
+				        
+				    }
+   			});
+			</script>
+			<script type="text/javascript">
+				$("#end").change(function () {
+				    var startDate = document.getElementById("start").value;
+				    var endDate = document.getElementById("end").value;
+				
+				    if ((Date.parse(startDate) >= Date.parse(endDate))) {
+				        alert("End date should be greater than Start date");
+				        document.getElementById("end").value = "";
+				    }
+				});
+				$('form').on('submit', function(event) {
+				$.ajax({
+					data : {
+						"enddate" : $("#end").val(),
+						"startdate" : $("#start").val(),
+						"solutionList" : $("#Solutionbox").val(),
+						"priorityList": $("#prioritybox").val(),
+						"sitenameList": $("#Sitebox").val(),
+						"customerList": $("#Customerbox").val()
+						
+					},
+					type: 'POST',
+					url :"/creategraph"
+					}).done(function(data){
+						var MeanTimeResponsecount = data['Mean Time To Respond'].split('|')[0];
+						var MeanTimeResponsecaseNo = data['Mean Time To Respond'].split('|')[1];
+						var meanTimeBetweenIncidentsCount = data['Mean Time For Between Incidents'].split('|')[0];
+						var meanTimeBetweenIncidentscaseNo = data['Mean Time For Between Incidents'].split('|')[1];
+						var meanTimeToCloseCount = data['Mean Time To Close'].split('|')[0];
+						var meanTimeToCloseNo = data['Mean Time To Close'].split('|')[1];
+						if(MeanTimeResponsecaseNo == -1){
+							$("#meanTimeToRespond").text("No Records Found !")
+						}else {$("#meanTimeToRespond").text(MeanTimeResponsecaseNo)
+						}
+						if(meanTimeBetweenIncidentscaseNo == -1){
+							$("#meanTimeBetweenIncidents").text("No Records Found !");
+						}else {
+							$("#meanTimeBetweenIncidents").text(meanTimeBetweenIncidentscaseNo);
+						}
+						if(meanTimeToCloseNo == -1){
+							$("#meanTimeToClose").text("No Records Found !");
+						}else{
+							$("#meanTimeToClose").text(meanTimeToCloseNo)
+						}
+						
+					    setInterval(randomValue1(MeanTimeResponsecount), 1000);
+						setInterval(randomValue2(meanTimeBetweenIncidentsCount), 1000);
+						setInterval(randomValue3(meanTimeToCloseCount), 1000);
+				
+					});
+					event.preventDefault();
+				});
+			</script>
+    	</div>
+		<div class="col-lg-9" style="background-color:#ffffff; height:100%">
+			<div class="row" style="background-color:#ffffff;">
+				<div class="col-sm-6" style="background-color:#ffffff;">
+			  		<div class="row" id="" style="width: 100%; height: 5%;"><p style="text-align: center;"><b>Mean Time To Respond (Minutes)</b></p></div>
+			  		<div class="row" id="" style="width: 100%; height: 5%;"><p style="text-align: center;"><b>Total Cases: <span id="meanTimeToRespond"></span></b></p></div>
+			  		<div class="row" id="chartdiv1" style="width: 100%; height: 35%;"></div>
+			  	</div>
+			  	<div class="col-sm-6" style="background-color:#ffffff;">
+			  		<div class="row" id="" style="width: 100%; height: 5%;"><p style="text-align: center;"><b>Mean Time To Close (Minutes)</b></p></div>
+			  		<div class="row" id="" style="width: 100%; height: 5%;"><p style="text-align: center;"><b>Total Cases: <span id="meanTimeToClose"></span></b></p></div>
+			  		<div class="row" id="chartdiv3" style="width: 100%; height: 35%;"></div>
+			  	</div>	  	
+			</div>
+		<div class="row" style="background-color:#ffffff;">
+		  		<div class="row" id="" style="width: 100%; height: 5%;"><p style="text-align: center;"><b>Mean Time Between Incidents (Hours)</b></p></div>
+		  		<div class="row" id="" style="width: 100%; height: 5%;"><p style="text-align: center;"><b>Total Cases: <span id="meanTimeBetweenIncidents"></span></b></p></div>
+		  		<div class="row" id="chartdiv2" style="width: 100%; height: 35%;"></div>	
+		</div>
+		<div class="row" style="background-color:#ffffff;height:10%">
+			<div class="col-lg-2"></div>
+			<div class="col-lg-2">
+				<div class="box blue1 inline" ></div>
+				<div><strong> &nbsp; Excellent</strong></div>
+			</div>
+			<div class="col-lg-2">
+				<div class="box green1 inline" ></div>
+				<div><strong> &nbsp; Good</strong></div>
+				<br class="clearBoth" />
+			</div>
+			<div class="col-lg-2">
+				<div class="box yellow1 inline" ></div>
+				<div><strong> &nbsp; Average</strong></div>
+				<br class="clearBoth" />
+			</div>
+			<div class="col-lg-2">
+				<div class="box red1 inline" ></div>
+				<div><strong> &nbsp; Poor</strong></div>
+				<br class="clearBoth" />
+			</div>
+			<div class="col-lg-2"></div>
+		</div>
+    </div>
+  	</div>
+	</div>
+   	<script language="javascript" type="text/javascript">
+	     $(window).on('load', function(){
+	     $('#loading').hide();
+	  });
+	</script>
+</body>
+</html>

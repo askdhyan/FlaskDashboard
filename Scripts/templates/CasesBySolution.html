@@ -1,0 +1,376 @@
+<html lang="en">
+<head>
+  <title>Support Dashboards</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='verizon.png') }}">
+  <link rel= "stylesheet" type= "text/css" href="{{ url_for('static', filename='basic_css.css') }}" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  
+  <!--  Start of Month Year Picker -->
+  	<link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="{{ url_for('static', filename='MonthPicker.min.js') }}"></script>
+	 <link href="{{ url_for('static', filename='MonthPicker.min.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{ url_for('static', filename='examples.js') }}"></script>
+   <!--  END of Month Year Picker -->
+  
+	<style>
+		#chartdiv {
+			width: 100%;
+			height: 500px;
+		}
+	
+		#loading {
+		   width: 100%;
+		   height: 100%;
+		   top: 0;
+		   left: 0;
+		   position: fixed;
+		   display: block;
+		   opacity: 0.7;
+		   background-color: #fff;
+		   z-index: 99;
+		   text-align: center;
+		}
+	</style>
+
+	<!-- Resources -->
+	<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+	<script src="https://www.amcharts.com/lib/3/serial.js"></script>
+	<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+	<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+	<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+	
+	<!-- Chart code -->
+	<script>
+		var data;
+		var chart = AmCharts.makeChart("chartdiv", {
+			"hideCredits":true,
+		    "type": "serial",
+			"theme": "light",
+		    "legend": {
+		        "horizontalGap": 10,
+		        "maxColumns": 1,
+		        "position": "right",
+				"useGraphSettings": true,
+				"markerSize": 10
+		    },
+		    "dataProvider": data,
+		    "valueAxes": [{
+		        "stackType": "regular",
+		        "axisAlpha": 0.3,
+		        "gridAlpha": 0
+		    }],
+		    "categoryField": "Month",
+		    "categoryAxis": {
+		        "gridPosition": "start",
+		        "axisAlpha": 0.5,
+		        "gridAlpha": 0,
+		        "position": "left"
+		    },
+		    "export": {
+		    	"enabled": false
+		     }
+		
+		});
+		
+		$(document).ready(function () {
+			   $(document).ajaxStart(function () {
+			       $("#loading").show();
+			   }).ajaxStop(function () {
+			       $("#loading").hide();
+			   });
+			});
+	</script>
+</head>
+<body>
+	<div id="loading">
+		  <img id="loading-image" src="{{ url_for('static', filename='ajax-loader.gif') }}" alt="Loading..." style="
+		    align-items:  center;
+		    margin-top: 20%;
+		    height: 10%;
+		">
+	</div>
+	<div class="container-fluid">
+  		<div class="row">
+    		<div class="col-lg-3" style="background-color:#F2F3F4;height:120%">
+				<form class="form-horizontal">
+				<legend>Select Date </legend>
+				<div class="form-group">
+					<div >
+						<label class="control-label col-sm-2" for="start">Start Date:</label>
+						<div class="col-sm-10">  
+							<!--  <input type="date"  class="form-control" id="start" name="trip"
+							   value="0000-00-00" /> -->
+							<input id=start name="start" type="text" />
+						</div>
+					</div >
+				</div>
+		
+				<!-- First Day of Last Month -->
+				<script>
+					var now = new Date();
+					var month = ("0" + (now.getMonth())).slice(-2);
+					$('#start').val(month+"/"+now.getFullYear());
+				</script>
+				<!-- First Day of Last Month -->
+				<div class="form-group">
+					<div >
+						<label class="control-label col-sm-2" for="end">End Date:</label>
+						<div class="col-sm-10"> 
+						<!--  <input type="date" class="form-control" id="end" name="trip"
+							   value="0000-00-00" / > -->
+							   <input id="end" name="end"  type="text" />
+						</div>
+					</div>
+				</div>
+				<!-- Last Day of Last Month -->
+				<script> 
+					var now = new Date();
+					var lastDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+					var lastDayOfMonth = lastDayOfMonth.getDate();
+					var day = ("0" + now.getDate()).slice(-2);
+					var month = ("0" + (now.getMonth())).slice(-2);
+					$('#end').val(month+"/"+now.getFullYear());
+				</script>
+				<!-- Last Day of Last Month -->
+				<fieldset>
+					<legend>Customers</legend>
+						<div class="form-group">
+							<div class="col-sm-10"><select class="form-control" id="Customerbox">
+								<option value="ALL" selected>ALL</option>
+								{% for customer in customer_data|sort(case_sensitive=False, attribute=None) %}
+									<option value="{{ customer }}">{{ customer }}</option>
+								{% endfor %}
+							</select>
+							</div>
+						</div>
+				</fieldset>
+				<fieldset>
+					<legend>Sites</legend>
+					<div class="form-group">
+						<div class="col-sm-10"><select class="form-control" id="Sitebox">
+							<option value="ALL" selected>ALL</option>
+							{% for site in Site_data|sort(case_sensitive=False, attribute=None) %}
+								<option value="{{ site }}">{{ site }}</option>
+							{% endfor %}
+						</select>
+						</div>
+					</div>
+				</fieldset>
+		
+				<script>
+				$("#Customerbox").change(function () {
+					var selectbox = document.getElementById("Sitebox")
+					var customer_site_dict = {{ customersite_data |tojson | safe }};
+					var customer = $("#Customerbox").val()
+					if (customer != "ALL") {
+						removeOptions(document.getElementById("Sitebox"))
+						var option= document.createElement("option");
+				        option.text="ALL";
+						option.value="ALL";
+						selectbox.add(option);
+						insertOptions(document.getElementById("Sitebox"),customer_site_dict[customer].sort())
+					}
+					else{
+						removeOptions(selectbox)
+						var allsitedata = {{ Site_data|sort(case_sensitive=False, attribute=None) |tojson | safe}};
+						var option= document.createElement("option");
+					        option.text="ALL";
+							option.value="ALL";
+							selectbox.add(option);
+						insertOptions(selectbox,allsitedata)
+					}
+	    			event.preventDefault();
+				});
+				function insertOptions(selectbox,data)
+				{
+   					var option;
+				    for(i = 0; i < data.length ; i++)
+				    {
+						option= document.createElement("option");
+				        option.text=data[i];
+						option.value=data[i];
+						selectbox.add(option);
+				    }
+				}
+				function removeOptions(selectbox)
+				{
+				    var i;
+				    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+				    {
+				        selectbox.remove(i);
+				    }
+				}
+				</script>
+
+				<fieldset>
+				<legend>Solution</legend>
+					<div class="form-group">
+						<div class="col-sm-10"><select class="form-control" id="Solutionbox" multiple>
+							<option value="ALL" selected>ALL</option>
+							{% for Solution in Solution_data|sort(case_sensitive=False, attribute=None) %}
+								<option value="{{ Solution }}">{{ Solution }}</option>
+							{% endfor %}
+    					</select>
+    					<input id="SolutionboxTxt" class="form-control" name="SolutionboxTxt"  type="text" readonly />
+    					</div>
+					</div>
+			</fieldset>
+			<script>
+			$("#Solutionbox").change(function () {
+				var Solutionbox = Array.prototype.filter.call( document.getElementById("Solutionbox").options, el => el.selected).map(el => el.value).join(",")
+			    document.getElementById("SolutionboxTxt").value = Solutionbox;
+			    
+			});
+			</script>		
+			<fieldset>
+			<legend>Priority</legend>
+			<div  class="form-group">
+				<div class="col-sm-10">
+					<select class="form-control" id="prioritybox" name="prioritybox">
+						<option value="ALL" selected>ALL</option>
+						<option value="Critical">Critical</option>
+						<option value="Major">Major</option>
+						<option value="Minor">Minor</option>
+					</select>
+				</div>
+			</div>
+			</fieldset>
+			<fieldset>
+			<legend>Case Type</legend>
+			<div  class="form-group">
+				<div class="col-sm-10">
+					<select class="form-control" id="casetypebox" name="casetypebox">
+						<option value="ALL" selected>ALL</option>
+						{% for casetype in casetype_data|sort(case_sensitive=False, attribute=None) %}
+							<option value="{{ casetype }}">{{ casetype }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+			</fieldset>
+			<div class="form-group">        
+			  <div class="col-sm-offset-4 col-sm-8">
+				<button type="submit" class="btn btn-default">Submit</button>
+			  </div>
+			</div>
+		</form>
+		<script type="text/javascript">
+			$("#end").change(function () {
+			    var startDate = document.getElementById("start").value;
+			    var endDate = document.getElementById("end").value;
+			
+			    if ((Date.parse(startDate) >= Date.parse(endDate))) {
+			        alert("End date should be greater than Start date");
+			        document.getElementById("end").value = "";
+			    }
+			});
+			$('form').on('submit', function(event) {
+			
+			var startDate = document.getElementById("start").value;
+			var endDate = document.getElementById("end").value;
+			var startDateArray = startDate.split("/");
+			var endDateArray = endDate.split("/");
+			if(startDateArray[1]>endDateArray[1])
+			{
+				alert("End date should be greater than Start date");	
+			}
+			else if(startDateArray[0]>endDateArray[0] && startDateArray[1]>endDateArray[1])
+			{
+				alert("End date should be greater than Start date");
+			}
+			else if(startDateArray[0]>endDateArray[0] && startDateArray[1] == endDateArray[1])
+			{
+				alert("End date should be greater than Start date");
+			}
+			else{
+				$.ajax({
+					data : {
+						"enddate" : $("#end").val(),
+						"startdate" : $("#start").val(),
+						"solutionList" : $("#Solutionbox").val().toString(),
+						"priorityList": $("#prioritybox").val(),
+						"siteNameList": $("#Sitebox").val(),
+						"customerList": $("#Customerbox").val(),
+						"caseTypeList": $("#casetypebox").val()
+					},
+					type: 'POST',
+					url :"/createChartForCasesBySolution"
+			
+				}).done(function(data){
+					if (data == -1)
+					{
+						chart.graphs = [];
+						alert("No Records Found..!!!");
+						chart.dataProvider = [];
+						chart.graphs = [];
+				       	chart.validateData();
+					}
+					else
+					{
+						chart.graphs = [];
+						var keys="";
+				        for(i=0;i<data.length;i++)
+				        {
+				        	var obj= data[i];
+				        	keys= keys+Object.keys(obj);
+				        	if(i != data.length-1)
+				        	{
+				        		keys=keys+",";
+				        	}	
+				        }
+				        var temp=keys.split(",");			        
+				        var graphdata = [];
+				        for(let i = 0;i < temp.length; i++){
+				            if(graphdata.indexOf(temp[i]) == -1){
+				            	graphdata.push(temp[i])
+				            }
+				        }	
+				       	for(i=0;i<graphdata.length;i++)
+				       	{
+				       		if(graphdata[i] !="Month"){
+				       		var graph = [];	
+				       		graph[i] = new AmCharts.AmGraph();
+				            graph[i].balloonText ="<b>[[title]]</b><br><span style='font-size:14px'>[[category]]: <b>[[value]]</b></span>" ; // we have to indicate which value axis should be used
+				            graph[i].fillAlphas=0.8;
+				            graph[i].labelText = "[[value]]";
+				            graph[i].lineAlpha = 0.3;
+				            graph[i].title = graphdata[i];
+				            graph[i].valueField = graphdata[i]; 
+				            graph[i].type = "column";
+				            graph[i].color = "#000000";
+				            chart.addGraph(graph[i]);
+				       		}
+				       	}
+				       	chart.dataProvider = data;
+				       	chart.validateData();
+					}
+				});
+			
+				event.preventDefault();
+			}
+			});
+
+			</script>
+	    </div>
+		<div class="col-lg-9" style="background-color:#ffffff;height:100%">
+			<div class="row" style="background-color:#ffffff;">
+				<div class="col-sm-6" style="background-color:#ffffff;">
+			  		<div class="row" id="" style="width: 200%; height: 15%;"><p style="text-align: center;"><b><font size="6">Cases by Solution</font></b></p></div>
+			  		<div class="row" id="chartdiv" style="width: 200%; height: 80%;"></div>
+			  	</div>
+			</div>
+	    </div>
+  	</div>
+	</div>
+   	<script language="javascript" type="text/javascript">
+	     $(window).on('load', function(){
+	     $('#loading').hide();
+ 	});
+	</script>
+</body>
+</html>

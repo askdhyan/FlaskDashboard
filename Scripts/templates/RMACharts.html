@@ -1,0 +1,449 @@
+<html lang="en">
+<head>
+  <title>Support Dashboards</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='verizon.png') }}">
+  <link rel= "stylesheet" type= "text/css" href="{{ url_for('static', filename='basic_css.css') }}" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  
+  <!--  Start of Month Year Picker -->
+  	<link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="{{ url_for('static', filename='MonthPicker.min.js') }}"></script>
+	 <link href="{{ url_for('static', filename='MonthPicker.min.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{ url_for('static', filename='examples.js') }}"></script>
+   <!--  END of Month Year Picker -->
+  
+	<style>
+		@import url(https://fonts.googleapis.com/css?family=Lato);
+		body {
+		  font-family: Lato;
+		  font-size: 12px;
+		}
+		
+		#chartdiv {
+		  width: 900px;
+		  max-width: 100%;
+		  height: 300px;
+		  border: 2px solid #eee;
+		  border-bottom: none;
+		}
+		
+		#chartdata {
+		  width: 900px;
+		  max-width: 100%;
+		  border: 2px solid #eee;
+		  border-top: none;
+		}
+		
+		#chartdata * {
+		  -webkit-box-sizing: border-box;
+		  -moz-box-sizing: border-box;
+		  box-sizing: border-box;
+		}
+		
+		#chartdata table {
+		  width: 100%;
+		  border-collapse: collapse;
+		}
+		
+		#chartdata table th,
+		#chartdata table td {
+		  text-align: center;
+		  padding: 5px 7px;
+		}
+		
+		#chartdata table th {
+		  background: #999;
+		  color: #fff;
+		}
+		
+		#chartdata table td {
+		  border: 1px solid #eee;
+		}
+		
+		#chartdata table td.row-title {
+		  font-weight: bold;
+		  width: 150px;
+		}
+		
+		#chartdata tr:hover td {
+		  background: #eee;
+		  cursor: pointer;
+		}
+		
+		#loading {
+		   width: 100%;
+		   height: 100%;
+		   top: 0;
+		   left: 0;
+		   position: fixed;
+		   display: block;
+		   opacity: 0.7;
+		   background-color: #fff;
+		   z-index: 99;
+		   text-align: center;
+		}
+	</style>
+
+	<!-- Resources -->
+	<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+	<script src="https://www.amcharts.com/lib/3/serial.js"></script>
+	<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+	
+	<!-- Chart code -->
+	<script>
+	// Table Code Start
+	 
+	 
+	
+	// Table Code End
+		AmCharts.addInitHandler(function(chart) {
+			
+			
+		  // check if export to table is enabled
+		  if (chart.dataTableId === undefined)
+		    return;
+		
+		  // get chart data
+		  var data = chart.dataProvider;
+		
+		  // create a table
+		  var holder = document.getElementById(chart.dataTableId);
+		
+		
+		  var table = document.createElement("table");
+		  holder.appendChild(table);
+		  var tr, td;
+		
+		  // construct table
+		  for (var i = 0; i < chart.graphs.length; i++) {
+		    
+		    // add rows
+		    tr = document.createElement("tr");
+		    tr.setAttribute('data-valuefield', chart.graphs[i].valueField);
+		    table.appendChild(tr);
+		    td = document.createElement("td");
+		    td.className = "row-title";
+		    td.innerHTML = chart.graphs[i].title;
+		    tr.appendChild(td);
+		    
+		    for (var x = 0; x < chart.dataProvider.length; x++) {
+		      td = document.createElement('td');
+		      td.innerHTML = chart.dataProvider[x][chart.graphs[i].valueField];
+		      tr.appendChild(td);
+		    }
+		  }
+		
+		}, ["serial"]);
+		
+		var chartData = [];
+		var chart = AmCharts.makeChart("chartdiv", {
+			  "hideCredits":true,
+			  "type": "serial",
+			  "dataProvider": chartData,
+			  "dataTableId": "chartdata",
+			  "categoryField": "Month",
+			  "plot":{
+				"stacked":true
+			  },
+			  "legend": {
+			        "horizontalGap": 10,
+			        "maxColumns": 1,
+			        "position": "top",
+					"useGraphSettings": true,
+					"markerSize": 10
+			    },
+			  "categoryAxis": {
+			    "gridAlpha": 0.07,
+			    "axisColor": "#DADADA",
+			    "startOnAxis": false,
+			    "gridPosition": "start",
+			    "tickPosition": "start",
+			    "tickLength": 25,
+			    "boldLabels": true
+			  },
+			  "valueAxes": [{
+			    "stackType": "regular",
+				"axisAlpha": 0.3,
+			    "gridAlpha": 0.07,
+			    "title": ""
+			  }],
+			  //"chartCursor": {
+			    //"cursorAlpha": 0,
+			   // "categoryBalloonEnabled": false
+			  //},
+			  "autoMargins": false,
+			  "marginLeft": 150,
+			  "marginRight": 0,
+			  "marginBottom": 25
+			});
+		
+		$(document).ready(function () {
+			   $(document).ajaxStart(function () {
+			       $("#loading").show();
+			   }).ajaxStop(function () {
+			       $("#loading").hide();
+			   });
+			});
+		
+	</script>
+</head>
+<body>
+	<div id="loading">
+	  <img id="loading-image" src="{{ url_for('static', filename='ajax-loader.gif') }}" alt="Loading..." style="
+	    align-items:  center;
+	    margin-top: 20%;
+	    height: 10%;
+	">
+	</div>
+	<div class="container-fluid"> 
+	  <div class="row">
+	    <div class="col-lg-3" style="background-color:#F2F3F4;height:120%">
+			<form class="form-horizontal">
+			<legend>Select Date </legend>
+			<div class="form-group">
+					<div >
+						<label class="control-label col-sm-2" for="start">Start Date:</label>
+						<div class="col-sm-10">  
+						<!--  <input type="date"  class="form-control" id="start" name="trip"
+							   value="0000-00-00" /> -->
+							   <input id=start name="start" type="text" />
+						</div>
+					</div >
+			</div>
+		
+			<!-- First Day of Last Month -->
+			<script>
+				var now = new Date();
+				var month = ("0" + (now.getMonth())).slice(-2);
+				$('#start').val(month+"/"+now.getFullYear());
+			</script>
+			<!-- First Day of Last Month -->
+		
+			<div class="form-group">
+				<div >
+					<label class="control-label col-sm-2" for="end">End Date:</label>
+					<div class="col-sm-10"> 
+					<!--  <input type="date" class="form-control" id="end" name="trip"
+						   value="0000-00-00" / > -->
+						   <input id="end" name="end"  type="text" />
+					</div>
+				</div>
+			</div>
+			<!-- Last Day of Last Month -->
+				<script> 
+					var now = new Date();
+					var lastDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+					var lastDayOfMonth = lastDayOfMonth.getDate();
+					var day = ("0" + now.getDate()).slice(-2);
+					var month = ("0" + (now.getMonth())).slice(-2);
+					$('#end').val(month+"/"+now.getFullYear());
+				</script>
+				<!-- Last Day of Last Month -->
+		
+				<div class="form-group">        
+		  			<div class="col-sm-offset-4 col-sm-8">
+						<button type="submit" class="btn btn-default">Submit</button>
+		  			</div>
+				</div>
+				</form>
+				<script type="text/javascript">
+					$("#end").change(function () {;
+					    var startDate = document.getElementById("start").value;
+					    var endDate = document.getElementById("end").value;
+					
+					    if ((Date.parse(startDate) >= Date.parse(endDate))) {
+					        alert("End date should be greater than Start date");
+					        document.getElementById("end").value = "";
+					    }
+					});
+
+					$('form').on('submit', function(event) {
+						var startDate = document.getElementById("start").value;
+						var endDate = document.getElementById("end").value;
+						var startDateArray = startDate.split("/");
+						var endDateArray = endDate.split("/");
+						if(startDateArray[1]>endDateArray[1])
+						{
+							alert("End date should be greater than Start date");	
+						}
+						else if(startDateArray[0]>endDateArray[0] && startDateArray[1]>endDateArray[1])
+						{
+							alert("End date should be greater than Start date");
+						}
+						else if(startDateArray[0]>endDateArray[0] && startDateArray[1] == endDateArray[1])
+						{
+							alert("End date should be greater than Start date");
+						}
+						else{
+							$.ajax({
+								data : {
+									"enddate" : $("#end").val(),
+									"startdate" : $("#start").val()
+								},
+								type: 'POST',
+								url :"/CreateChartForRMACharts"
+						
+							}).done(function(data){
+								//alert(JSON.stringify(data));
+								if (data == -1)
+								{
+									chart.graphs = [];
+									alert("No Records Found..!!!");
+									chart.dataProvider = [];
+									chart.graphs = [];
+							       	chart.validateData();
+								}
+								else
+								{
+									chart.graphs = [];
+									var keys="";
+							        for(i=0;i<data.length;i++)
+							        {
+							        	var obj= data[i];
+							        	keys= keys+Object.keys(obj);
+							        	if(i != data.length-1)
+							        	{
+							        		keys=keys+",";
+							        	}	
+							        }
+							        var temp=keys.split(",");			        
+							        var graphdata = [];
+							        for(let i = 0;i < temp.length; i++){
+							            if(graphdata.indexOf(temp[i]) == -1){
+							            	graphdata.push(temp[i])
+							            }
+							        }	
+							       	for(i=0;i<graphdata.length;i++)
+							       	{
+							       		if(graphdata[i] !="Month"){
+							       		var graph = [];	
+							       		graph[i] = new AmCharts.AmGraph();
+							            graph[i].balloonText ="<b>[[title]]</b><br><span style='font-size:14px'>[[category]]: <b>[[value]]</b></span>" ; // we have to indicate which value axis should be used
+							            graph[i].fillAlphas=0.8;
+							            graph[i].labelText = "[[value]]";
+							            graph[i].lineAlpha = 0.3;
+							            graph[i].title = graphdata[i];
+							            graph[i].valueField = graphdata[i]; 
+							            graph[i].type = "column";
+							            graph[i].color = "#000000";
+							            chart.addGraph(graph[i]);
+							       		}
+							       	}
+							       	chart.dataProvider = data;
+							       	
+
+							     	// check if export to table is enabled
+							        if (chart.dataTableId === undefined)
+							          return;
+							        // get chart data
+							        var data = chart.dataProvider;
+
+							        // create a table
+							        var holder = document.getElementById(chart.dataTableId);
+							      //Clear Table
+									while (holder.hasChildNodes()) {
+						              holder.removeChild(holder.lastChild);
+						          }
+							        var table = document.createElement("table");
+							        holder.appendChild(table);
+							        var tr, td;
+
+							        // construct table
+							        for (var i = 0; i < chart.graphs.length; i++) {
+							          // add rows
+							          tr = document.createElement("tr");
+							          tr.setAttribute('data-valuefield', chart.graphs[i].valueField);
+							          table.appendChild(tr);
+							          td = document.createElement("td");
+							          td.className = "row-title";
+							          td.innerHTML = chart.graphs[i].title;
+							          tr.appendChild(td);
+							          
+							          for (var x = 0; x < chart.dataProvider.length; x++) {
+							            td = document.createElement('td');
+							            td.innerHTML = chart.dataProvider[x][chart.graphs[i].valueField];
+							            tr.appendChild(td);
+							          }
+							        }
+							       	chart.validateData();
+								}
+							});
+							event.preventDefault();
+						}
+					});
+				</script>
+				<style>
+					table, td,th {
+					    border: 1px solid black;
+					}
+				</style>
+    			</div>
+				<div class="col-lg-9" style="background-color:#ffffff;height:100%">
+					<div class="row" style="background-color:#ffffff;">
+						<!--  <div class="col-sm-6" style="background-color:#ffffff;"> -->
+					  		<div class="row" id="" style="width: 100%; height: 5%;"><p style="text-align: center;"><b><font size="6">RMA Charts</font></b></p></div>
+					  		
+					  		<div class="row" id="ChartTable" style="width:60%;float: left;">
+					  		<div class="row" id="chartdiv" style="width: 100%;"></div>
+							 
+					  		<div class="row" id="chartdata"style="width: 100%;"></div>
+					  		</div> 
+					  			<div id="table1" style="width: 40%;float:  right;">
+							  				<table style="width:  100%; align="right"">
+							  					<tr>
+							  						<td>Product</td>
+							  						<td>Installed Base</td>
+							  						<td>#RMAs</td>
+							  						<td>RMA Rate</td>
+							  					</tr>
+							  					<tr>
+							  						<td>Sensity Fixture</td>
+							  						<td>5646</td>
+							  						<td>147</td>
+							  						<td>3%</td>
+							  					</tr>
+							  					
+							  				</table>
+							  			</div> 
+							  			</br>
+							  			</br>
+							  			</br>
+							  			</br>
+							  			<div  id="table2" style="width: 40%;float:  right;">
+							  				<table style="width:  100%; align="right">
+							  					<tr>
+							  						<td>Product</td>
+							  						<td>Failure mode</td>
+							  						<td>% of Installed Base Impacted</td>
+							  					</tr>
+							  					<tr>
+							  						<td>Sensity Fixture</td>
+							  						<td>Disconnected</td>
+							  						<td>1.7%</td>
+							  					</tr>
+							  					<tr>
+							  						<td>Sensity Fixture</td>
+							  						<td>Disconnected</td>
+							  						<td>1.7%</td>
+							  					</tr>
+							  					
+							  				</table>
+							  			</div>
+					  		
+					    <!--  </div> -->
+					</div>
+			    </div>
+			  </div>
+			</div>
+	<script language="javascript" type="text/javascript">
+	     $(window).on('load', function(){
+	     	$('#loading').hide();
+		 });
+	</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+legend {
+    background-color: #000;
+    color: #fff;
+    padding: 3px 6px;
+}
+
+.output {
+    font: 1rem 'Fira Sans', sans-serif;
+}
+
+input {
+    margin: .4rem;
+}
+
+label {
+    display: inline-block;
+    text-align: right;
+    width: 20%;
+}
+.box{
+	width:20px;
+	height:20px;
+}
+.blue1{
+	background:#33ccff;
+}
+.green1{
+	background:#009933;
+}
+.yellow1{
+	background:#ffff00;
+}
+.red1{
+	background:#ff0000;
+}
+div.inline { float:left; }
+.clearBoth { clear:both; }
+
